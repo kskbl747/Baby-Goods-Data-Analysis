@@ -1,0 +1,11 @@
+﻿field,missing_count,dataset
+user_id,0,trade_history
+auction_id,0,trade_history
+cat_id,0,trade_history
+cat1,0,trade_history
+property,144,trade_history
+buy_mount,0,trade_history
+day,0,trade_history
+user_id,0,baby_info
+birthday,0,baby_info
+gender,0,baby_info

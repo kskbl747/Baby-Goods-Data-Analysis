@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Baby-care</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <style>
+    :root { --bg:#FAFBFF; --card:#fff; --pink:#FF5C8A; --soft:#FFF1F5; --title:#101828; --text:#344054; --muted:#667085; --border:#EEF2F7; --glass:rgba(255,255,255,.82); --glass-border:rgba(255,255,255,.82); --glass-shadow:0 16px 38px rgba(31,41,55,.07), inset 0 1px 0 rgba(255,255,255,.9); }
+    * { box-sizing:border-box; } html,body { margin:0; min-height:100%; } body { position:relative; color:var(--title); font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",Arial,sans-serif; background:radial-gradient(circle at 12% 10%,rgba(255,92,138,.12),transparent 25%),radial-gradient(circle at 88% 12%,rgba(137,207,240,.15),transparent 26%),radial-gradient(circle at 70% 92%,rgba(184,161,255,.13),transparent 28%),linear-gradient(135deg,#FFF9FB 0%,#FAFBFF 48%,#F6FBFF 100%); overflow-x:hidden; } body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.16; background-image:linear-gradient(rgba(255,92,138,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.08) 1px,transparent 1px); background-size:34px 34px; mask-image:linear-gradient(180deg,rgba(0,0,0,.65),rgba(0,0,0,.12)); } body::after { content:""; position:fixed; inset:0; pointer-events:none; opacity:.10; background-image:radial-gradient(circle,rgba(255,92,138,.24) 0 2px,transparent 2px),radial-gradient(circle,rgba(137,207,240,.24) 0 1.6px,transparent 1.6px); background-size:112px 112px,148px 148px; background-position:24px 34px,80px 20px; } svg { display:block; width:1em; height:1em; fill:currentColor; }
+    .page { position:relative; z-index:1; width:min(1920px,100vw); min-height:1080px; margin:0 auto; padding:10px 16px 12px 10px; display:grid; grid-template-columns:280px 1fr; gap:14px; }
+    .glass,.sidebar,.card,.summary-card,.insight,.q-item,.usability-item { background:var(--glass); border:1px solid var(--glass-border); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); box-shadow:var(--glass-shadow); }
+    .card,.kpi,.summary-card { position:relative; } .card::before,.kpi::before,.summary-card::before { content:""; position:absolute; left:14px; right:14px; top:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent); pointer-events:none; }
+    .card,.kpi,.summary-card,.insight,.q-item,.tab-btn { transition:transform .18s ease, box-shadow .18s ease; } .card:hover,.kpi:hover,.summary-card:hover { transform:translateY(-2px); box-shadow:0 22px 48px rgba(31,41,55,.10), inset 0 1px 0 rgba(255,255,255,.9); } .kpi:hover .kpi-icon { transform:scale(1.06); }
+    .sidebar { position:relative; min-height:1058px; padding:20px 16px; overflow:hidden; border-radius:22px; }
+    .brand { display:flex; align-items:center; gap:10px; margin-bottom:24px; } .face { width:46px;height:46px;border:3px solid var(--pink);border-radius:50%;position:relative;flex:0 0 46px;background:rgba(255,255,255,.4); } .face:before,.face:after { content:"";position:absolute;top:17px;width:5px;height:5px;background:var(--pink);border-radius:50%; } .face:before{left:12px} .face:after{right:12px} .smile{position:absolute;left:14px;top:25px;width:16px;height:8px;border-bottom:3px solid var(--pink);border-radius:0 0 16px 16px} .brand h1 { margin:0; color:var(--pink); font-size:21px; line-height:1; } .brand p { margin:7px 0 0; color:#101828; font-size:12px; font-weight:800; }
+    .side-title { display:flex; gap:8px; align-items:center; margin:0 0 14px; color:var(--pink); font-size:17px; } .side-title svg { width:17px; height:17px; }
+    .insight { display:grid; grid-template-columns:50px 1fr; gap:10px; align-items:center; padding:13px 8px; margin-bottom:12px; border-radius:16px; } .i-icon { width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--softc);color:var(--c);font-size:23px;box-shadow:0 8px 18px rgba(16,24,40,.05); } .i-icon svg { width:23px; height:23px; } .insight span { color:var(--muted);font-size:11px;font-weight:800; } .insight strong { display:block;margin-top:5px;color:var(--c);font-size:21px;line-height:1.05; } .insight small { display:block;margin-top:4px;color:#101828;font-size:11px;font-weight:800; }
+    .side-deco { position:absolute; left:18px; right:18px; bottom:22px; height:80px; opacity:.30; } .side-deco .circle { position:absolute; border-radius:50%; background:rgba(255,92,138,.22); } .side-deco .c1{width:88px;height:88px;left:6px;bottom:-34px} .side-deco .c2{width:46px;height:46px;right:16px;bottom:10px;background:rgba(137,207,240,.22)} .side-deco .mini-heart{position:absolute;left:112px;bottom:34px;color:var(--pink)} .side-deco .mini-heart svg{width:20px;height:20px} .side-deco .mini-bottle{position:absolute;right:72px;bottom:16px;color:var(--pink)} .side-deco .mini-bottle svg{width:28px;height:28px}
+    .main { min-width:0; } .hero { position:relative; height:104px; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; margin-bottom:10px; } .hero h2 { margin:0; text-align:center; font-size:31px; line-height:1.12; } .hero p { margin:6px 0 10px; text-align:center; color:#101828; font-size:14px; font-weight:700; } .hero-deco { position:absolute; right:10px; top:2px; width:190px; height:66px; opacity:.30; pointer-events:none; } .deco-circle { position:absolute; border-radius:50%; background:rgba(255,92,138,.22); } .dc1{width:92px;height:92px;right:36px;top:-34px} .dc2{width:42px;height:42px;right:0;top:16px;background:rgba(137,207,240,.22)} .dc3{width:28px;height:28px;right:118px;top:26px;background:rgba(184,161,255,.25)} .deco-heart{position:absolute;color:rgba(255,92,138,.5)} .deco-heart svg{width:17px;height:17px} .dh1{right:92px;top:8px} .dh2{right:145px;top:32px} .deco-bottle{position:absolute;right:54px;top:18px;color:rgba(255,92,138,.48)} .deco-bottle svg{width:28px;height:28px}
+    .tabs { display:flex; gap:10px; justify-content:center; } .tab-btn { border:1px solid rgba(255,255,255,.72); background:rgba(255,255,255,.58); color:var(--pink); height:34px; padding:0 28px; border-radius:999px; font-weight:800; cursor:pointer; backdrop-filter:blur(14px); } .tab-btn.active { background:linear-gradient(135deg,#FF5C8A,#FF8FAB); color:#fff; border-color:rgba(255,255,255,.78); box-shadow:0 12px 24px rgba(255,92,138,.20); }
+    .tab-panel { display:none; } .tab-panel.active { display:block; }
+    .grid { display:grid; grid-template-columns:repeat(24,minmax(0,1fr)); gap:14px; } .card { border-radius:17px; padding:14px 16px; min-width:0; overflow:hidden; } .card h3 { margin:0; font-size:15px; color:#101828; } .sub { margin-top:5px; color:var(--muted); font-size:10.5px; font-weight:700; } .card-head { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom:5px; } .unit { color:var(--muted); font-size:10.5px; font-weight:800; }
+    .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:14px; } .kpi { height:110px; display:flex; align-items:center; gap:14px; padding:16px; border-radius:17px; } .kpi-icon { width:52px;height:52px;border-radius:50%;display:grid;place-items:center;flex:0 0 52px;color:var(--c);background:rgba(255,241,245,.78);font-size:26px; transition:transform .18s ease; } .kpi-icon svg { width:26px;height:26px; } .kpi span { font-size:12px;color:#101828;font-weight:800; } .kpi strong { display:block;margin-top:8px;font-size:24px;line-height:1; } .kpi small { display:block;margin-top:9px;color:var(--muted);font-size:11px;font-weight:700; }
+    .trend { grid-column:span 10; height:380px; } .top6 { grid-column:span 7; height:380px; } .value { grid-column:span 7; height:380px; } .chart { width:100%; height:100%; } .trend-chart,.top-chart { height:326px; } .value-chart { height:244px; } .value-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; } .value-mini { padding:10px 6px; border-radius:13px; text-align:center; background:rgba(255,255,255,.52); border:1px solid rgba(255,255,255,.68); } .value-mini span { display:block;color:var(--muted);font-size:10px;font-weight:800; } .value-mini strong { display:block;margin-top:4px;color:var(--vc);font-size:17px; }
+    .word { grid-column:span 7; height:270px; padding:12px 13px; } .quality { grid-column:span 7; height:270px; } .weekday { grid-column:span 6; height:270px; } .conclusion { grid-column:span 4; height:270px; } .small-chart { height:210px; } .wordcloud { height:222px; margin-top:8px; display:flex; align-items:center; justify-content:center; border-radius:15px; background:rgba(255,255,255,.56); border:1px solid rgba(255,255,255,.78); box-shadow:inset 0 1px 0 rgba(255,255,255,.85); overflow:hidden; cursor:zoom-in; } .wordcloud img { width:100%; height:100%; object-fit:contain; transition:transform .25s ease; } .wordcloud:hover img { transform:scale(1.08); } .missing { color:var(--muted); font-size:13px; }
+    .gauge-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; height:160px; margin-top:8px; } .quality-gauge { min-width:0; height:160px; border-radius:14px; background:rgba(255,255,255,.50); border:1px solid rgba(255,255,255,.68); } .quality-note { margin-top:10px; color:#667085; font-size:12px; line-height:1.55; font-weight:700; } .quality-note b { color:#344054; }
+    .conclusion p { margin:12px 0 0; color:#344054; font-size:16px; font-weight:800; line-height:1.75; } .conclusion b { color:var(--pink); }
+    .summary { grid-column:1/-1; display:grid; grid-template-columns:1.35fr repeat(5,1fr); gap:14px; margin-bottom:14px; } .summary-card { border-radius:17px; padding:16px; min-height:104px; } .summary-card span { display:block; color:var(--muted); font-size:12px; font-weight:800; } .summary-card strong { display:block; margin-top:8px; color:#101828; font-size:22px; } .summary-card.task strong { color:var(--pink); font-size:19px; }
+    .model-chart-card { grid-column:span 12; height:430px; } .feature-card { grid-column:span 12; height:430px; } .model-chart,.feature-chart { height:374px; }
+    .diag-card { grid-column:span 7; height:300px; } .advice-card { grid-column:span 7; height:300px; } .expert-card { grid-column:span 5; height:300px; } .profile { grid-column:span 5; height:300px; } .expert-text { margin-top:12px; color:#344054; font-size:12px; line-height:1.7; font-weight:700; white-space:pre-line; } .profile-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; height:236px; margin-top:4px; } .profile-chart { height:236px; }
+    .line { display:flex; gap:8px; align-items:center; margin:12px 0; color:#344054; font-size:13px; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .mark { width:18px;height:18px;display:inline-grid;place-items:center;flex:0 0 18px;border-radius:50%;color:#fff;background:#22C55E; } .mark svg { width:11px;height:11px; }
+    .modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:20; background:rgba(16,24,40,.45); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); } .modal.active { display:flex; } .modal img { max-width:80vw; max-height:80vh; object-fit:contain; border-radius:18px; background:#fff; box-shadow:0 30px 80px rgba(16,24,40,.30); } .modal-close { position:absolute; top:32px; right:42px; width:38px; height:38px; border:0; border-radius:50%; background:rgba(255,255,255,.88); color:#101828; font-size:22px; cursor:pointer; }
+    @media (max-width:1400px) { .page { grid-template-columns:1fr; } .sidebar { min-height:auto; } .side-deco { display:none; } .trend,.top6,.value,.word,.quality,.weekday,.conclusion,.model-chart-card,.feature-card,.diag-card,.advice-card,.profile { grid-column:1/-1; } .kpis,.summary { grid-template-columns:repeat(2,1fr); } }
+  </style>
+
+  <style id="latest-dashboard-contract">
+    .word { grid-column:span 8 !important; height:270px; }
+    .weekday { grid-column:span 7 !important; height:270px; }
+    .expert-business { grid-column:span 9 !important; height:270px; }
+    .expert-model { grid-column:span 14 !important; height:300px; }
+    .profile { grid-column:span 10 !important; height:300px; }
+    .expert-text { margin-top:12px; color:#344054; font-size:13px; line-height:1.7; font-weight:700; white-space:pre-line; }
+    .expert-business .expert-text { font-size:14px; }
+    .model-chart-card { grid-column:span 12 !important; }
+    .feature-card { grid-column:span 12 !important; }
+    .quality,.conclusion,.diag-card,.advice-card,.expert-card { display:none !important; }
+    @media (max-width:1400px) { .expert-business,.expert-model { grid-column:1/-1 !important; } }
+  </style>
+
+  <style id="static-conclusion-style">
+    .card-head { min-height:auto; margin-bottom:8px; }
+    .trend-chart,.top-chart { height:340px; }
+    .model-chart { height:252px; }
+    .model-note { margin-top:4px; color:#667085; font-size:11px; line-height:1.45; font-weight:800; }
+    .conclusion-summary { overflow:hidden; }
+    .conclusion-summary h3 { margin:0; font-size:15px; color:#101828; }
+    .conclusion-summary .sub { margin:5px 0 10px; color:#667085; font-size:11px; font-weight:800; }
+    .conclusion-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .conclusion-item { padding:10px 12px; border-radius:12px; background:rgba(255,255,255,.58); border:1px solid rgba(255,255,255,.72); }
+    .conclusion-item:nth-child(2n) { background:rgba(234,243,255,.62); }
+    .conclusion-item:nth-child(3n) { background:rgba(236,253,243,.62); }
+    .conclusion-item span { color:#FF5C8A; font-weight:900; font-size:12px; }
+    .conclusion-item p { margin:6px 0 0; color:#344054; font-size:12px; line-height:1.55; font-weight:700; }
+    .conclusion-item b { color:#101828; font-weight:950; }
+    .conclusion-item mark { background:transparent; color:#EF476F; font-weight:950; padding:0; }
+    .model-conclusion .conclusion-item p { font-size:11.5px; line-height:1.48; }
+    .model-list .wide { grid-column:1/-1; }
+  </style>
+
+  <style id="model-tab-tight-style">
+    .compact-summary { grid-template-columns:repeat(6,minmax(0,1fr)) !important; gap:10px !important; margin-bottom:12px !important; }
+    .compact-summary .summary-card { min-height:90px !important; height:90px !important; padding:12px 12px !important; border-radius:15px !important; overflow:hidden; }
+    .compact-summary .summary-card span { color:#667085; font-size:11px; font-weight:900; }
+    .compact-summary .summary-card strong { margin-top:5px !important; color:#101828; font-size:18px !important; line-height:1.08; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .compact-summary .summary-card small { display:block; margin-top:5px; color:#667085; font-size:10.5px; line-height:1.25; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .compact-summary .summary-card em { display:inline-block; margin-top:6px; padding:3px 7px; border-radius:999px; background:rgba(255,92,138,.12); color:#FF5C8A; font-size:10px; font-style:normal; font-weight:900; }
+    .compact-summary .summary-card:nth-child(2) em { background:rgba(243,238,255,.86); color:#8B5CF6; }
+    .compact-summary .summary-card:nth-child(3) em { background:rgba(234,243,255,.86); color:#3B82F6; }
+    .compact-summary .summary-card:nth-child(4) em { background:rgba(236,253,243,.86); color:#22C55E; }
+    .compact-summary .summary-card:nth-child(5) em { background:rgba(255,247,230,.86); color:#F59E0B; }
+    .model-chart-card,.feature-card { height:430px !important; overflow:visible !important; }
+    .model-chart { height:310px !important; }
+    .feature-chart { height:330px !important; }
+    .model-note,.feature-note { margin-top:6px !important; padding:8px 10px; border-radius:10px; color:#667085; font-size:12px; line-height:1.5; font-weight:700; }
+    .model-note { background:rgba(255,241,245,.70); }
+    .feature-note { background:rgba(243,238,255,.65); }
+    .model-note b,.feature-note b { color:#FF5C8A; }
+    .expert-model,.profile { height:300px !important; }
+    @media (max-width:1400px) { .compact-summary { grid-template-columns:repeat(2,minmax(0,1fr)) !important; } }
+  </style>
+
+  <style id="chart-modal-style">
+    #trendChart,#categoryChart,#highBuyChart,#salesGaugeChart,#weekdayChart,#modelChart,#featureChart,#genderChart,#ageChart,
+    .wordcloud img { cursor:zoom-in; }
+    .chart-modal { position:fixed; inset:0; z-index:99; display:none; align-items:center; justify-content:center; background:rgba(16,24,40,.45); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+    .chart-modal.active { display:flex; }
+    .chart-modal-body { width:82vw; height:78vh; padding:22px; border-radius:24px; background:rgba(255,255,255,.95); box-shadow:0 30px 90px rgba(16,24,40,.30); }
+    .chart-modal-title { position:absolute; top:32px; left:50%; transform:translateX(-50%); color:#101828; font-size:18px; font-weight:900; }
+    .chart-modal-echarts { width:100%; height:100%; }
+    .chart-modal-image { max-width:100%; max-height:100%; object-fit:contain; display:none; margin:auto; }
+    .chart-modal .modal-close { position:absolute; top:26px; right:36px; width:38px; height:38px; border:0; border-radius:50%; background:rgba(255,255,255,.9); color:#101828; font-size:24px; cursor:pointer; line-height:38px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside class="sidebar">
+      <div class="brand"><div class="face"><span class="smile"></span></div><div><h1>Baby-care Insight</h1><p>母婴电商消费行为分析平台</p></div></div>
+      <h2 class="side-title"><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M12 21s-7.5-4.6-9.6-9.2C.8 8.2 2.9 5 6.3 5c2 0 3.4 1.1 4.2 2.3C11.3 6.1 12.7 5 14.7 5c3.4 0 5.5 3.2 3.9 6.8C16.5 16.4 12 21 12 21Z'/></svg><span>核心洞察</span></h2>
+      <div class="insight" style="--c:#EF476F;--softc:#FFF1F5"><div class="i-icon"><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M4 18h16l1-10-5 3-4-7-4 7-5-3 1 10Zm1 2h14v2H5v-2Z'/></svg></div><div><span>热门品类</span><strong>喂养用品</strong><small>销量最高商品大类</small></div></div>
+      <div class="insight" style="--c:#8B5CF6;--softc:#F3EEFF"><div class="i-icon"><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M4 17h3.8l4.1-5.4 3.4 3.4L21 7.8V13h2V4h-9v2h5.4l-4.3 5.4-3.5-3.5L6.8 15H4v2Z'/></svg></div><div><span>高购买量订单占比</span><strong>11.2%</strong><small>高价值订单占整体订单</small></div></div>
+      <div class="insight" style="--c:#EF476F;--softc:#FFF1F5"><div class="i-icon"><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M12 2a10 10 0 1 0 10 10h-2a8 8 0 1 1-8-8V2Zm0 5a5 5 0 1 0 5 5h-2a3 3 0 1 1-3-3V7Zm1 6 8-8-1.4-1.4-8 8V6h-2v8h8v-2h-4.6Z'/></svg></div><div><span>推荐展示模型</span><strong>Random Forest</strong><small>Acc 0.939 / F1 0.940</small></div></div>
+      <div class="insight" style="--c:#22C55E;--softc:#ECFDF3"><div class="i-icon"><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.4 0-7 2.2-7 5v2h10.6a7 7 0 0 1-.6-2.8c0-1.6.5-3.1 1.5-4.2H10Zm11.7 1.7-1.4-1.4-4.3 4.3-1.8-1.8-1.4 1.4 3.2 3.2 5.7-5.7Z'/></svg></div><div><span>画像匹配率</span><strong>3.0%</strong><small>仅少量用户匹配画像</small></div></div>
+      <div class="side-deco"><span class="circle c1"></span><span class="circle c2"></span><span class="mini-heart"><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M12 21s-7.5-4.6-9.6-9.2C.8 8.2 2.9 5 6.3 5c2 0 3.4 1.1 4.2 2.3C11.3 6.1 12.7 5 14.7 5c3.4 0 5.5 3.2 3.9 6.8C16.5 16.4 12 21 12 21Z'/></svg></span><span class="mini-bottle"><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M9 2h6v4l2 2v11a3 3 0 0 1-3 3h-4a3 3 0 0 1-3-3V8l2-2V2Zm2 2v2h2V4h-2Zm-2 8h6v-2H9v2Zm0 4h6v-2H9v2Z'/></svg></span></div>
+    </aside>
+    <main class="main">
+      <header class="hero">
+        <div><h2>母婴电商消费行为分析及可视化</h2><p>Mother &amp; Baby E-commerce Behavior Analytics</p></div>
+        <nav class="tabs"><button class="tab-btn active" data-tab="business">业务总览</button><button class="tab-btn" data-tab="model">模型验证</button></nav>
+        <div class="hero-deco"><span class="deco-circle dc1"></span><span class="deco-circle dc2"></span><span class="deco-circle dc3"></span><span class="deco-heart dh1"><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M12 21s-7.5-4.6-9.6-9.2C.8 8.2 2.9 5 6.3 5c2 0 3.4 1.1 4.2 2.3C11.3 6.1 12.7 5 14.7 5c3.4 0 5.5 3.2 3.9 6.8C16.5 16.4 12 21 12 21Z'/></svg></span><span class="deco-heart dh2"><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M12 21s-7.5-4.6-9.6-9.2C.8 8.2 2.9 5 6.3 5c2 0 3.4 1.1 4.2 2.3C11.3 6.1 12.7 5 14.7 5c3.4 0 5.5 3.2 3.9 6.8C16.5 16.4 12 21 12 21Z'/></svg></span><span class="deco-bottle"><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M9 2h6v4l2 2v11a3 3 0 0 1-3 3h-4a3 3 0 0 1-3-3V8l2-2V2Zm2 2v2h2V4h-2Zm-2 8h6v-2H9v2Zm0 4h6v-2H9v2Z'/></svg></span></div>
+      </header>
+
+      <section id="business" class="tab-panel active">
+        <section class="kpis"><article class='kpi glass' style='--c:#EF476F'><div class='kpi-icon'><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M7 8V7a5 5 0 0 1 10 0v1h2l1 13H4L5 8h2Zm2 0h6V7a3 3 0 0 0-6 0v1Z'/></svg></div><div><span>总交易记录数</span><strong>29,672</strong><small>清洗后样本统计</small></div></article><article class='kpi glass' style='--c:#3B82F6'><div class='kpi-icon'><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.2 0-7 2.1-7 5v2h14v-2c0-2.9-2.8-5-7-5Zm8-2a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm0 2c-.7 0-1.4.1-2 .3 1.8 1.1 3 2.7 3 4.7v2h4v-2c0-2.9-2.1-5-5-5Z'/></svg></div><div><span>交易用户数</span><strong>29,646</strong><small>去重后有效用户</small></div></article><article class='kpi glass' style='--c:#8B5CF6'><div class='kpi-icon'><svg viewBox='0 0 24 24' aria-hidden='true'><path d='m12 2 9 5-9 5-9-5 9-5Zm-7 8 6 3.4v7.2l-6-3.4V10Zm14 0v7.2l-6 3.4v-7.2l6-3.4Z'/></svg></div><div><span>商品 ID 数</span><strong>28,141</strong><small>auction_id 去重统计</small></div></article><article class='kpi glass' style='--c:#F59E0B'><div class='kpi-icon'><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM4 3H2v2h2l3 10h10.5l3-8H7.2L6.5 5H4V3Z'/></svg></div><div><span>总购买数量</span><strong>38,582</strong><small>有效购买数量</small></div></article></section>
+        <section class="grid">
+          <section class="card trend"><div class="card-head"><div><h3>购买趋势概览（按月）</h3><div class="sub">最近 12 个月购买数量与订单数变化</div></div></div><div id="trendChart" class="chart trend-chart"></div></section>
+          <section class="card top6"><div class="card-head"><div><h3>商品大类销量 TOP6</h3><div class="sub">中文业务品类按购买数量降序</div></div></div><div id="categoryChart" class="chart top-chart"></div></section>
+          <section class="card value"><div class="card-head"><div><h3>高购买量订单价值洞察</h3><div class="sub">基于 buy_mount 75% 分位数识别</div></div></div><div class="value-body"><div id="highBuyChart" class="chart value-chart"></div><div id="salesGaugeChart" class="chart sales-gauge"></div></div><div class="value-metrics"><div class="value-mini" style="--vc:#EF476F"><span>订单数占比</span><strong>11.2%</strong></div><div class="value-mini" style="--vc:#3B82F6"><span>销量贡献率</span><strong>31.7%</strong></div><div class="value-mini" style="--vc:#8B5CF6"><span>平均购买量提升</span><strong>3.7x</strong></div></div></section>
+          <section class="card word"><h3>热门商品词云</h3><div class="wordcloud"><img id="wordcloudImg" src="../charts/09_wordcloud.png" alt="母婴商品消费热点词云图" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'missing',textContent:'词云图待生成'}))"></div></section>
+          <section class="card weekday"><h3>星期购买活跃度</h3><div id="weekdayChart" class="chart small-chart"></div></section>
+
+          <section class="card expert-business conclusion-summary"><h3>结论总结</h3>
+            <div class="sub">基于消费结构、时间趋势和高购买量订单的分析结论</div>
+            <div class="conclusion-list">
+              <div class="conclusion-item"><span>消费结构</span><p><b>喂养用品</b>、<b>婴儿服饰</b>和<b>尿裤湿巾</b>构成主要消费品类。</p></div>
+              <div class="conclusion-item"><span>高购买量订单</span><p>订单数占比约 <mark>11.2%</mark>，贡献约 <mark>31.7%</mark> 的销量，具有重点运营价值。</p></div>
+              <div class="conclusion-item"><span>时间趋势</span><p>购买行为存在月度与星期波动，可结合活动周期安排备货。</p></div>
+              <div class="conclusion-item"><span>运营建议</span><p>围绕核心品类开展组合促销、库存优化和推荐位配置。</p></div>
+            </div>
+          </section>
+        </section>
+      </section>
+
+      <section id="model" class="tab-panel">
+
+        <section class="summary compact-summary">
+          <div class="summary-card task"><span>主任务</span><strong>商品大类识别 cat1</strong><small>多分类类目识别任务</small><em>主模型</em></div>
+          <div class="summary-card"><span>最高分模型</span><strong>Gradient Boosting</strong><small>Accuracy 0.972 / F1 0.973</small><em>最高分</em></div>
+          <div class="summary-card"><span>推荐展示模型</span><strong>Random Forest</strong><small>Accuracy 0.939 / F1 0.940</small><em>可解释性强</em></div>
+          <div class="summary-card"><span>辅助任务</span><strong>high_buy 识别</strong><small>高购买量订单二分类</small><em>辅助分析</em></div>
+          <div class="summary-card"><span>辅助模型表现</span><strong>AUC 0.680</strong><small>F1 0.289 / Accuracy 0.670</small><em>仍有空间</em></div>
+          <div class="summary-card"><span>关键解释特征</span><strong>cat_id</strong><small>商品层级关系贡献最高</small><em>核心特征</em></div>
+        </section>
+        <section class="grid">
+          <section class="card model-chart-card"><div class="card-head"><h3>模型性能对比（cat1 主模型）</h3></div><div id="modelChart" class="chart model-chart"></div><div class="model-note">说明：Gradient Boosting 在 cat1 识别任务中得分最高；Random Forest 指标较高且便于解释，因此作为推荐展示模型。</div></section>
+          <section class="card feature-card"><div class="card-head"><h3>特征重要性 TOP10</h3></div><div id="featureChart" class="chart feature-chart"></div><div class="feature-note">cat_id 相关特征贡献最高，说明商品层级关系对 cat1 识别影响最大。</div></section>
+
+          <section class="card expert-model conclusion-summary model-conclusion"><h3>模型结论总结</h3>
+            <div class="sub">基于模型性能、特征重要性和 high_buy 辅助任务的分析结论</div>
+            <div class="conclusion-list model-list">
+              <div class="conclusion-item"><span>最高分模型</span><p><b>Gradient Boosting</b> 在 cat1 任务中表现最好，Accuracy 约 <mark>0.972</mark>，F1-score 约 <mark>0.973</mark>。</p></div>
+              <div class="conclusion-item"><span>推荐展示模型</span><p><b>Random Forest</b> 指标较高，并能输出特征重要性，适合作为报告展示模型。</p></div>
+              <div class="conclusion-item"><span>关键特征</span><p><b>cat_id</b>、<b>cat_id_encoded</b> 和 <b>cat_id_freq</b> 贡献最高，说明商品层级关系影响明显。</p></div>
+              <div class="conclusion-item"><span>辅助模型</span><p><b>high_buy</b> 是二分类辅助任务，AUC 约 <mark>0.680</mark>，具备一定识别能力。</p></div>
+              <div class="conclusion-item wide"><span>优化方向</span><p>后续可补充价格、品牌、浏览、收藏、加购等行为特征。</p></div>
+            </div>
+          </section><section class="card profile"><h3>已匹配用户画像分析</h3><div class="sub">仅统计已匹配宝宝画像的用户记录</div><div class="profile-grid"><div id="genderChart" class="chart profile-chart"></div><div id="ageChart" class="chart profile-chart"></div></div></section>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="chart-modal" id="chartModal">
+    <button class="modal-close" type="button" aria-label="关闭">×</button>
+    <div class="chart-modal-title" id="chartModalTitle"></div>
+    <div class="chart-modal-body">
+      <div id="chartModalEcharts" class="chart-modal-echarts"></div>
+      <img id="chartModalImage" class="chart-modal-image" alt="图表放大预览">
+    </div>
+  </div>
+
+  <script>
+    const injectedPayload = {"colors": ["#3B82F6", "#22C55E", "#F59E0B", "#8B5CF6", "#06B6D4", "#EF476F", "#64748B"], "metrics": {"rawTradeRecords": 29971, "cleanTradeRecords": 29672, "tradeUsers": 29646, "itemKinds": 28141, "totalBuyMount": 38582, "highBuyOrders": 3337, "normalOrders": 26335, "highBuyRate": 11.2, "salesContributionRate": 31.7, "avgBuyLift": 3.7, "profileCoverageRate": 3.0, "profileUnmatchedRecords": 28796, "tradeUsabilityRate": 100.0, "coreFieldCompleteRate": 100.0, "highestModel": "Gradient Boosting", "highestAccuracy": 0.9724, "highestF1": 0.9726, "displayModel": "Random Forest", "displayAccuracy": 0.9385, "displayF1": 0.9396, "highBuyAuxModel": "Decision Tree", "highBuyAuxAuc": 0.6802, "highBuyAuxF1": 0.2887}, "categoryNames": ["喂养用品", "婴儿服饰", "尿裤湿巾", "孕产用品", "玩具早教", "童车童床"], "categoryValues": [14228.0, 9363.0, 7119.0, 2929.0, 2751.0, 2192.0], "monthLabels": ["2014-03", "2014-04", "2014-05", "2014-06", "2014-07", "2014-08", "2014-09", "2014-10", "2014-11", "2014-12", "2015-01", "2015-02"], "monthBuy": [1547.0, 1597.0, 1942.0, 1452.0, 1327.0, 1537.0, 1785.0, 1823.0, 2246.0, 1968.0, 1653.0, 320.0], "monthOrders": [1233.0, 1230.0, 1428.0, 1081.0, 1051.0, 1192.0, 1393.0, 1458.0, 1821.0, 1545.0, 1324.0, 255.0], "weekdayLabels": ["一", "二", "三", "四", "五", "六", "日"], "weekdayBuy": [6004.0, 6398.0, 5674.0, 5623.0, 5363.0, 4704.0, 4816.0], "weekdayOrders": [4648.0, 4830.0, 4361.0, 4320.0, 4128.0, 3631.0, 3754.0], "highNames": ["高购买量订单", "普通订单"], "highValues": [3337, 26335], "highRate": 11.2, "highSalesRate": 31.7, "valueLift": 3.7, "genderNames": ["女宝宝", "男宝宝"], "genderValues": [461, 415], "ageNames": ["0-6个月", "6-12个月", "1-2岁", "2-3岁", "3岁以上"], "ageValues": [230, 241, 241, 138, 26], "modelNames": ["Logistic Regression", "Decision Tree", "Random Forest", "Gradient Boosting", "High Buy - Decision Tree"], "modelAcc": [0.3687, 0.9527, 0.9385, 0.9724, 0.6696], "modelF1": [0.3652, 0.954, 0.9396, 0.9726, 0.2887], "modelAuc": [null, null, null, null, 0.6802], "featureNames": ["cat_id", "cat_id_encoded", "cat_id_freq", "property_freq", "auction_id_freq", "month", "weekday", "baby_age", "baby_age_group_encoded", "gender_encoded"], "featureShort": ["cat_id", "cat_id", "cat_freq", "property_freq", "auction_freq", "month", "weekday", "baby_age", "age_group", "gender"], "featureValues": [0.3587, 0.3454, 0.2701, 0.0082, 0.0063, 0.0055, 0.0029, 0.0012, 0.001, 0.0007]};
+    let payload = injectedPayload;
+    const textColor="#101828", mutedColor="#667085", gridLine="rgba(148,163,184,.18)", colors=payload.colors;
+    const charts = [];
+    const chartOptions = {};
+    let modalChart = null;
+    const chartTitles = {
+      trendChart: "购买趋势概览（按月）",
+      categoryChart: "商品大类销量 TOP6",
+      highBuyChart: "高购买量订单价值洞察",
+      salesGaugeChart: "销量贡献率",
+      weekdayChart: "星期购买活跃度",
+      modelChart: "模型性能对比（cat1 主模型）",
+      featureChart: "特征重要性 TOP10",
+      genderChart: "已匹配用户性别画像",
+      ageChart: "已匹配宝宝年龄阶段画像"
+    };
+    function baseChartOption() {
+      return {
+        textStyle: { fontFamily: "'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',Arial,sans-serif" },
+        tooltip: {
+          trigger: "axis",
+          backgroundColor: "rgba(255,255,255,0.92)",
+          borderColor: "rgba(255,92,138,0.18)",
+          borderWidth: 1,
+          textStyle: { color: "#101828" },
+          extraCssText: "box-shadow: 0 12px 30px rgba(16,24,40,.12); border-radius: 12px;"
+        },
+        animationDuration: 900,
+        animationEasing: "cubicOut"
+      };
+    }
+    function merge(base, extra) { return Object.assign({}, base, extra); }
+    function chart(id,opt){const el=document.getElementById(id); if(!el)return; if(!window.echarts){el.innerHTML="<div class='missing'>ECharts 加载失败，请联网后重新打开。</div>";return;} const c=echarts.init(el,null,{renderer:"canvas"}); c.setOption(opt); c.__chartId=id; chartOptions[id]=opt; charts.push(c); window.addEventListener("resize",()=>c.resize());}
+    const pinkGrad=window.echarts?new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:"#EF476F"},{offset:1,color:"#FFE3EC"}]):"#EF476F";
+    const purpleGrad=window.echarts?new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:"#C4B5FD"},{offset:1,color:"#8B5CF6"}]):"#8B5CF6";
+    function gaugeOption(title,value,color){return merge(baseChartOption(),{tooltip:merge(baseChartOption().tooltip,{trigger:"item",formatter:()=>`${title}：${Number(value).toFixed(1)}%`}),series:[{type:"gauge",min:0,max:100,radius:"92%",center:["50%","58%"],startAngle:205,endAngle:-25,progress:{show:true,width:10,itemStyle:{color}},axisLine:{lineStyle:{width:10,color:[[1,"rgba(148,163,184,.16)"]]}},axisTick:{show:false},splitLine:{show:false},axisLabel:{show:false},pointer:{show:false},anchor:{show:false},title:{offsetCenter:[0,"42%"],fontSize:10,color:mutedColor,fontWeight:800},detail:{valueAnimation:true,offsetCenter:[0,"4%"],fontSize:19,fontWeight:900,color,formatter:v=>v.toFixed(1)+"%"},data:[{value,name:title}]}]});}
+    function renderDashboard() {
+    chart("trendChart",merge(baseChartOption(),{color:["#EF476F","#3B82F6"],tooltip:merge(baseChartOption().tooltip,{trigger:"axis",formatter:items=>`<b>${items[0].axisValue}</b><br/>购买数量：${Number(items[0].value).toLocaleString()} 件<br/>订单数：${Number(items[1].value).toLocaleString()} 单`}),legend:{top:0,left:"center",textStyle:{color:mutedColor,fontSize:10}},grid:{left:52,right:46,top:42,bottom:58},dataZoom:[{type:"inside",xAxisIndex:0,filterMode:"none"}],xAxis:{type:"category",data:payload.monthLabels,axisLabel:{color:mutedColor,fontSize:10,interval:1,rotate:25,margin:12},axisTick:{show:false},axisLine:{lineStyle:{color:gridLine}}},yAxis:[{type:"value",name:"购买数量",axisLabel:{color:mutedColor,fontSize:10},splitLine:{lineStyle:{color:gridLine}}},{type:"value",name:"订单数",axisLabel:{color:mutedColor,fontSize:10},splitLine:{show:false}}],series:[{name:"购买数量（件）",type:"bar",data:payload.monthBuy,barWidth:18,itemStyle:{borderRadius:[8,8,0,0],color:pinkGrad},markPoint:{symbolSize:48,label:{fontSize:9},data:[{type:"max",name:"峰值"}]},markLine:{symbol:"none",label:{formatter:"平均",fontSize:9},lineStyle:{color:"rgba(239,71,111,.42)",type:"dashed"},data:[{type:"average",name:"平均"}]}},{name:"订单数（单）",type:"line",yAxisIndex:1,data:payload.monthOrders,smooth:true,symbolSize:6,lineStyle:{width:3,color:"#3B82F6",shadowColor:"rgba(59,130,246,.28)",shadowBlur:10,shadowOffsetY:6},itemStyle:{color:"#3B82F6"}}]}));
+    chart("categoryChart",merge(baseChartOption(),{tooltip:merge(baseChartOption().tooltip,{trigger:"axis",axisPointer:{type:"shadow"},formatter:items=>`${items[0].name}<br/>销量：${Number(items[0].value).toLocaleString()} 件`}),grid:{left:88,right:80,top:14,bottom:24},xAxis:{type:"value",show:false,max:Math.max(...payload.categoryValues)*1.16},yAxis:{type:"category",data:payload.categoryNames.slice().reverse(),axisLabel:{color:textColor,fontSize:11},axisTick:{show:false},axisLine:{show:false}},series:[{name:"背景轨道",type:"bar",data:payload.categoryValues.map(()=>Math.max(...payload.categoryValues)).slice().reverse(),barWidth:15,barGap:"-100%",silent:true,itemStyle:{borderRadius:[0,9,9,0],color:"rgba(255,255,255,.55)"}},{name:"购买数量",type:"bar",data:payload.categoryValues.slice().reverse(),barWidth:15,label:{show:true,position:"right",color:textColor,fontSize:9,formatter:p=>Number(p.value).toLocaleString()},itemStyle:{borderRadius:[0,9,9,0],color:p=>new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:"rgba(255,255,255,.25)"},{offset:1,color:colors[(p.dataIndex+2)%colors.length]}])}}]}));
+    chart("highBuyChart",merge(baseChartOption(),{color:["#EF476F","#3B82F6"],tooltip:merge(baseChartOption().tooltip,{trigger:"item",formatter:p=>`${p.name}<br/>订单数：${Number(p.value).toLocaleString()}<br/>占比：${p.percent}%`}),title:{text:payload.highRate+"%",subtext:"小占比，高贡献",left:"34%",top:"37%",textAlign:"center",textStyle:{fontSize:21,color:"#EF476F",fontWeight:900},subtextStyle:{fontSize:10,color:textColor,fontWeight:700}},legend:{right:0,top:"middle",orient:"vertical",itemWidth:9,itemHeight:9,textStyle:{color:textColor,fontSize:10}},series:[{type:"pie",radius:["48%","68%"],center:["34%","50%"],label:{show:false},labelLine:{show:false},data:payload.highNames.map((name,i)=>({name,value:payload.highValues[i]}))}]}));
+    chart("salesGaugeChart",gaugeOption("销量贡献率",payload.metrics.salesContributionRate,"#3B82F6"));
+    chart("weekdayChart",merge(baseChartOption(),{color:["#22C55E","#3B82F6"],tooltip:merge(baseChartOption().tooltip,{trigger:"axis",formatter:items=>`星期${items[0].axisValue}<br/>购买数量：${Number(items[0].value).toLocaleString()} 件<br/>订单数：${Number(items[1].value).toLocaleString()} 单`}),legend:{top:0,left:"center",textStyle:{fontSize:10,color:mutedColor}},grid:{left:42,right:30,top:42,bottom:26},xAxis:{type:"category",data:payload.weekdayLabels,axisLabel:{color:mutedColor,fontSize:10},axisTick:{show:false},axisLine:{lineStyle:{color:gridLine}}},yAxis:[{type:"value",axisLabel:{color:mutedColor,fontSize:9},splitLine:{lineStyle:{color:gridLine}}},{type:"value",axisLabel:{color:mutedColor,fontSize:9},splitLine:{show:false}}],series:[{name:"购买数量",type:"bar",data:payload.weekdayBuy,barWidth:16,itemStyle:{borderRadius:[7,7,0,0],color:"#22C55E"}},{name:"订单数",type:"line",yAxisIndex:1,data:payload.weekdayOrders,smooth:true,symbolSize:5,lineStyle:{width:2.5,color:"#3B82F6",shadowColor:"rgba(59,130,246,.22)",shadowBlur:8,shadowOffsetY:4},itemStyle:{color:"#3B82F6"}}]}));
+    const modelLabels = ["Logistic\nRegression","Decision\nTree","Random\nForest\n推荐展示","Gradient\nBoosting\n最高分"];
+    const modelOption = merge(baseChartOption(), {
+      color: ["#3B82F6", "#22C55E"],
+      tooltip: merge(baseChartOption().tooltip, {
+        trigger: "axis",
+        axisPointer: { type: "shadow" },
+        formatter: function(items) {
+          var html = "<b>" + items[0].axisValue.replace(/\n/g, " ") + "</b>";
+          items.forEach(function(it) {
+            html += "<br/>" + it.seriesName + "：" + (it.value == null ? "-" : it.value.toFixed(3));
+          });
+          return html;
+        }
+      }),
+      legend: { top: 8, left: "center", textStyle: { fontSize: 11, color: mutedColor } },
+      grid: { left: 48, right: 30, top: 56, bottom: 82 },
+      xAxis: { type: "category", data: modelLabels, axisLabel: { color: textColor, fontSize: 10, interval: 0, lineHeight: 14 }, axisTick: { show: false }, axisLine: { lineStyle: { color: gridLine } } },
+      yAxis: { type: "value", min: 0, max: 1, axisLabel: { color: mutedColor, fontSize: 10 }, splitLine: { lineStyle: { color: gridLine } } },
+      series: [
+        { name: "Accuracy", type: "bar", data: payload.modelAcc.slice(0,4), barWidth: 16, barGap: "20%", label: { show: true, position: "top", fontSize: 10, formatter: function(p) { return p.value == null ? "-" : p.value.toFixed(3); } }, markArea: { silent: true, itemStyle: { color: "rgba(255,92,138,.08)" }, data: [[{ xAxis: "Gradient\nBoosting\n最高分" }, { xAxis: "Gradient\nBoosting\n最高分" }]] } },
+        { name: "F1-score", type: "bar", data: payload.modelF1.slice(0,4), barWidth: 16, label: { show: true, position: "top", fontSize: 10, formatter: function(p) { return p.value == null ? "-" : p.value.toFixed(3); } } }
+      ]
+    });
+    chart("modelChart", modelOption);
+    chart("featureChart",merge(baseChartOption(),{tooltip:merge(baseChartOption().tooltip,{trigger:"axis",formatter:params=>{const p=params[0]; const reversedShort=payload.featureShort.slice().reverse(); const idx=reversedShort.indexOf(p.name); const full=payload.featureNames.slice().reverse()[idx] || p.name; return full + "<br/>重要性：" + p.value.toFixed(3);}}),grid:{left:118,right:80,top:18,bottom:20},xAxis:{type:"value",axisLabel:{color:mutedColor,fontSize:10},splitLine:{lineStyle:{color:gridLine}}},yAxis:{type:"category",data:payload.featureShort.slice().reverse(),axisLabel:{color:textColor,fontSize:10},axisTick:{show:false},axisLine:{show:false}},series:[{name:"重要性",type:"bar",data:payload.featureValues.slice().reverse(),barWidth:12,label:{show:true,position:"right",fontSize:9,color:textColor,formatter:p=>p.value.toFixed(3)},itemStyle:{borderRadius:[0,7,7,0],color:p=>{const rank=payload.featureValues.length-1-p.dataIndex; return rank<3?new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:"#7C3AED"},{offset:1,color:"#3B82F6"}]):new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:"#DDD6FE"},{offset:1,color:"#A5B4FC"}]);}}}]}));
+    chart("genderChart",merge(baseChartOption(),{color:["#3B82F6","#EF476F"],title:{text:"性别",left:"center",top:0,textStyle:{fontSize:12,color:textColor}},tooltip:merge(baseChartOption().tooltip,{trigger:"item"}),legend:{bottom:0,left:"center",itemWidth:9,itemHeight:9,textStyle:{fontSize:10,color:textColor}},series:[{type:"pie",radius:["42%","65%"],center:["50%","48%"],label:{show:false},labelLine:{show:false},data:payload.genderNames.map((name,i)=>({name,value:payload.genderValues[i]}))}]}));
+    chart("ageChart",merge(baseChartOption(),{color:["#3B82F6","#F59E0B","#22C55E","#8B5CF6","#EF476F"],title:{text:"年龄阶段",left:"center",top:0,textStyle:{fontSize:12,color:textColor}},tooltip:merge(baseChartOption().tooltip,{trigger:"item"}),legend:{bottom:0,left:"center",itemWidth:9,itemHeight:9,textStyle:{fontSize:10,color:textColor}},series:[{type:"pie",radius:["42%","65%"],center:["50%","48%"],label:{show:false},labelLine:{show:false},data:payload.ageNames.map((name,i)=>({name,value:payload.ageValues[i]}))}]}));
+    }
+    document.querySelectorAll(".tab-btn").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));btn.classList.add("active");document.getElementById(btn.dataset.tab).classList.add("active");setTimeout(()=>charts.forEach(c=>c.resize()),80);}));
+    function initChartModal() {
+      const modal = document.getElementById("chartModal");
+      const modalTitle = document.getElementById("chartModalTitle");
+      const modalEcharts = document.getElementById("chartModalEcharts");
+      const modalImage = document.getElementById("chartModalImage");
+      if (!modal || !modalTitle || !modalEcharts || !modalImage) return;
+      function closeModal() {
+        modal.classList.remove("active");
+        if (modalChart) { modalChart.dispose(); modalChart = null; }
+      }
+      function openChart(id) {
+        if (!chartOptions[id] || !window.echarts) return;
+        modalTitle.textContent = chartTitles[id] || "图表详情";
+        modalImage.style.display = "none";
+        modalEcharts.style.display = "block";
+        modal.classList.add("active");
+        if (modalChart) modalChart.dispose();
+        modalChart = echarts.init(modalEcharts, null, { renderer: "canvas" });
+        modalChart.setOption(chartOptions[id], true);
+        setTimeout(() => modalChart && modalChart.resize(), 40);
+      }
+      function openImage(src, title) {
+        modalTitle.textContent = title || "热门商品词云";
+        if (modalChart) { modalChart.dispose(); modalChart = null; }
+        modalEcharts.style.display = "none";
+        modalImage.style.display = "block";
+        modalImage.src = src;
+        modal.classList.add("active");
+      }
+      ["trendChart","categoryChart","highBuyChart","salesGaugeChart","weekdayChart","modelChart","featureChart","genderChart","ageChart"].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener("click", event => { event.stopPropagation(); openChart(id); });
+        const card = el.closest(".card");
+        if (card && !card.dataset.zoomBound) {
+          card.dataset.zoomBound = "1";
+          card.addEventListener("click", event => {
+            if (event.target.closest("button,a,img")) return;
+            openChart(id);
+          });
+        }
+      });
+      const wordImg = document.getElementById("wordcloudImg");
+      if (wordImg) {
+        wordImg.addEventListener("click", event => {
+          event.stopPropagation();
+          openImage(wordImg.getAttribute("src") || "../charts/09_wordcloud.png", "热门商品词云");
+        });
+      }
+      modal.querySelector(".modal-close").addEventListener("click", closeModal);
+      modal.addEventListener("click", event => { if (event.target === modal) closeModal(); });
+      window.addEventListener("keydown", event => { if (event.key === "Escape" && modal.classList.contains("active")) closeModal(); });
+    }
+    initChartModal();
+        fetch("../dashboard_data.json").then(res => res.ok ? res.json() : Promise.reject(new Error("dashboard_data unavailable"))).then(data => { payload = data; renderDashboard(); }).catch(() => renderDashboard());
+  </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+﻿模型检查报告
+============================================================
+
+1）当前模型任务
+- 当前主模型为 cat1 商品大类识别模型。
+- 该任务是商品层级分类识别任务，不是纯用户行为预测：基于商品细分类别、商品属性、交易时间和用户画像特征识别商品所属大类。
+- high_buy 高购买量订单识别作为辅助任务保留，用于展示二分类建模与局限性分析。
+- high_buy 阈值：buy_mount > 1.0000；高购买量样本占比：11.25%。
+
+2）使用的特征
+- cat1 主模型特征：cat_id, cat_id_encoded, property_freq, auction_id_freq, cat_id_freq, month, weekday, gender_encoded, baby_age, baby_age_group_encoded。
+- 主模型没有使用 cat1_name，因为它只是 cat1 的中文映射，会造成明显标签泄露。
+- high_buy 模型特征：month, weekday, gender_encoded, baby_age, user_buy_count, cat1。
+
+3）数据泄露检查
+- cat1 主模型允许使用 cat_id，因为 cat_id 是商品细分类别，cat1 是商品大类，二者属于合理的商品层级关系。
+- cat1 主模型没有使用 cat1_name、cat1 编码变体或目标变量派生字段。
+- property_freq、auction_id_freq、cat_id_freq 均在训练集上拟合，再映射到测试集，降低训练/测试信息穿透风险。
+- 已删除 high_buy 模型中的 buy_mount，因为 high_buy 直接由 buy_mount 构造，保留该字段会造成目标变量泄露。
+- 已删除 high_buy 模型中的销量聚合特征：user_total_buy_mount, item_total_buy_mount, cat_total_buy_mount。
+- user_total_buy_mount、item_total_buy_mount、cat_total_buy_mount 当前在全量数据上生成，仅用于描述分析和数据集留档，不进入最终模型。
+
+4）各模型准确率和 F1 值
+cat1 商品大类识别主模型：
+              model  Accuracy  Precision_weighted  Recall_weighted  F1_weighted  Training Time
+      Random Forest  0.938500            0.942464         0.938500     0.939584       1.567415
+  Gradient Boosting  0.972367            0.973321         0.972367     0.972584       7.902045
+      Decision Tree  0.952654            0.957767         0.952654     0.954019       0.140615
+Logistic Regression  0.368660            0.412280         0.368660     0.365205       3.502609
+
+high_buy 高购买量订单识别辅助模型：
+              model  threshold_75_percentile      AUC  Accuracy  Precision   Recall       F1  Training Time
+      Decision Tree                      1.0 0.680162  0.669587   0.190431 0.596702 0.288720       0.024378
+      Random Forest                      1.0 0.679133  0.686268   0.192486 0.560720 0.286590       0.379902
+  Gradient Boosting                      1.0 0.693505  0.887784   1.000000 0.001499 0.002994       0.222829
+Logistic Regression                      1.0 0.536038  0.887616   0.000000 0.000000 0.000000       0.027058
+
+5）最终推荐使用的模型
+- 最高分模型：Gradient Boosting，Accuracy=0.9724，F1_weighted=0.9726。
+- 推荐展示模型：Random Forest，Accuracy=0.9385，Precision_weighted=0.9425，Recall_weighted=0.9385，F1_weighted=0.9396。
+- 推荐展示模型选择说明：Random Forest 表现较好，且可直接输出特征重要性，便于报告解释；Gradient Boosting 作为最高分模型在性能对比中同步展示。
+- 辅助模型推荐：Decision Tree，优先按 F1、再按 AUC 选择；AUC=0.6802，F1=0.2887。
+
+6）模型效果是否合理
+- 主模型 Accuracy 状态：已达到 0.80 到 0.95 的展示区间。
+- 超高准确率检查：对比模型中 Gradient Boosting, Decision Tree 的 Accuracy 超过 0.95；已检查未使用 cat1_name、cat1 变体或目标编码字段，原因是 cat_id 与 cat1 的商品层级关系较强。
+- 如果主模型准确率较高，主要原因是 cat_id 与 cat1 存在商品层级关系，这符合本项目商品大类识别任务设定。
+- 原 high_buy 模型 Accuracy/AUC 为 1.0 的主要原因是 buy_mount 泄露；删除后结果更可信，可作为辅助任务展示。
+- high_buy 正类占比较低，单看 Accuracy 容易被多数类掩盖，因此报告同时关注 Precision、Recall、F1 和 AUC。
+- 如果 high_buy 指标明显下降，属于合理现象，因为当前数据缺少价格、优惠、浏览、收藏、加购、品牌、店铺等更强预测变量。
+
+7）后续改进建议
+- 后续可按时间切分训练集和测试集，并只用训练集历史窗口计算用户、商品和类目聚合特征。
+- 补充商品价格、品牌、店铺、活动、浏览、收藏、加购等行为特征。
+- 对 cat1、cat_id、性别、年龄阶段等类别字段使用 One-Hot、目标编码或 Spark ML StringIndexer/OneHotEncoder。
+- 在报告中明确：主模型是商品层级识别模型，high_buy 是辅助的高购买量行为识别模型。

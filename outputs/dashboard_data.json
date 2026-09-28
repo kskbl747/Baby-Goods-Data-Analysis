@@ -1,0 +1,218 @@
+{
+  "colors": [
+    "#3B82F6",
+    "#22C55E",
+    "#F59E0B",
+    "#8B5CF6",
+    "#06B6D4",
+    "#EF476F",
+    "#64748B"
+  ],
+  "metrics": {
+    "rawTradeRecords": 29971,
+    "cleanTradeRecords": 29672,
+    "tradeUsers": 29646,
+    "itemKinds": 28141,
+    "totalBuyMount": 38582,
+    "highBuyOrders": 3337,
+    "normalOrders": 26335,
+    "highBuyRate": 11.2,
+    "salesContributionRate": 31.7,
+    "avgBuyLift": 3.7,
+    "profileCoverageRate": 3.0,
+    "profileUnmatchedRecords": 28796,
+    "tradeUsabilityRate": 100.0,
+    "coreFieldCompleteRate": 100.0,
+    "highestModel": "Gradient Boosting",
+    "highestAccuracy": 0.9724,
+    "highestF1": 0.9726,
+    "displayModel": "Random Forest",
+    "displayAccuracy": 0.9385,
+    "displayF1": 0.9396,
+    "highBuyAuxModel": "Decision Tree",
+    "highBuyAuxAuc": 0.6802,
+    "highBuyAuxF1": 0.2887
+  },
+  "categoryNames": [
+    "喂养用品",
+    "婴儿服饰",
+    "尿裤湿巾",
+    "孕产用品",
+    "玩具早教",
+    "童车童床"
+  ],
+  "categoryValues": [
+    14228.0,
+    9363.0,
+    7119.0,
+    2929.0,
+    2751.0,
+    2192.0
+  ],
+  "monthLabels": [
+    "2014-03",
+    "2014-04",
+    "2014-05",
+    "2014-06",
+    "2014-07",
+    "2014-08",
+    "2014-09",
+    "2014-10",
+    "2014-11",
+    "2014-12",
+    "2015-01",
+    "2015-02"
+  ],
+  "monthBuy": [
+    1547.0,
+    1597.0,
+    1942.0,
+    1452.0,
+    1327.0,
+    1537.0,
+    1785.0,
+    1823.0,
+    2246.0,
+    1968.0,
+    1653.0,
+    320.0
+  ],
+  "monthOrders": [
+    1233.0,
+    1230.0,
+    1428.0,
+    1081.0,
+    1051.0,
+    1192.0,
+    1393.0,
+    1458.0,
+    1821.0,
+    1545.0,
+    1324.0,
+    255.0
+  ],
+  "weekdayLabels": [
+    "一",
+    "二",
+    "三",
+    "四",
+    "五",
+    "六",
+    "日"
+  ],
+  "weekdayBuy": [
+    6004.0,
+    6398.0,
+    5674.0,
+    5623.0,
+    5363.0,
+    4704.0,
+    4816.0
+  ],
+  "weekdayOrders": [
+    4648.0,
+    4830.0,
+    4361.0,
+    4320.0,
+    4128.0,
+    3631.0,
+    3754.0
+  ],
+  "highNames": [
+    "高购买量订单",
+    "普通订单"
+  ],
+  "highValues": [
+    3337,
+    26335
+  ],
+  "highRate": 11.2,
+  "highSalesRate": 31.7,
+  "valueLift": 3.7,
+  "genderNames": [
+    "女宝宝",
+    "男宝宝"
+  ],
+  "genderValues": [
+    461,
+    415
+  ],
+  "ageNames": [
+    "0-6个月",
+    "6-12个月",
+    "1-2岁",
+    "2-3岁",
+    "3岁以上"
+  ],
+  "ageValues": [
+    230,
+    241,
+    241,
+    138,
+    26
+  ],
+  "modelNames": [
+    "Logistic Regression",
+    "Decision Tree",
+    "Random Forest",
+    "Gradient Boosting",
+    "High Buy - Decision Tree"
+  ],
+  "modelAcc": [
+    0.3687,
+    0.9527,
+    0.9385,
+    0.9724,
+    0.6696
+  ],
+  "modelF1": [
+    0.3652,
+    0.954,
+    0.9396,
+    0.9726,
+    0.2887
+  ],
+  "modelAuc": [
+    null,
+    null,
+    null,
+    null,
+    0.6802
+  ],
+  "featureNames": [
+    "cat_id",
+    "cat_id_encoded",
+    "cat_id_freq",
+    "property_freq",
+    "auction_id_freq",
+    "month",
+    "weekday",
+    "baby_age",
+    "baby_age_group_encoded",
+    "gender_encoded"
+  ],
+  "featureShort": [
+    "cat_id",
+    "cat_id",
+    "cat_freq",
+    "property_freq",
+    "auction_freq",
+    "month",
+    "weekday",
+    "baby_age",
+    "age_group",
+    "gender"
+  ],
+  "featureValues": [
+    0.3587,
+    0.3454,
+    0.2701,
+    0.0082,
+    0.0063,
+    0.0055,
+    0.0029,
+    0.0012,
+    0.001,
+    0.0007
+  ]
+}

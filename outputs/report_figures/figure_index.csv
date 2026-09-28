@@ -1,0 +1,12 @@
+﻿文件名,图名,路径
+01_high_buy_distribution.png,高购买量订单分布,D:\mother_baby_analysis\outputs\report_figures\01_high_buy_distribution.png
+02_numeric_distribution.png,数值变量分布,D:\mother_baby_analysis\outputs\report_figures\02_numeric_distribution.png
+03_correlation_heatmap.png,建模特征相关系数热力图,D:\mother_baby_analysis\outputs\report_figures\03_correlation_heatmap.png
+04_feature_importance.png,商品大类识别模型特征重要性 TOP10,D:\mother_baby_analysis\outputs\report_figures\04_feature_importance.png
+05_model_comparison.png,模型性能对比（cat1 主模型）,D:\mother_baby_analysis\outputs\report_figures\05_model_comparison.png
+06_roc_curve.png,高购买量订单识别 ROC 曲线,D:\mother_baby_analysis\outputs\report_figures\06_roc_curve.png
+07_confusion_matrix.png,高购买量订单识别混淆矩阵,D:\mother_baby_analysis\outputs\report_figures\07_confusion_matrix.png
+08_probability_distribution.png,高购买量订单预测概率分布,D:\mother_baby_analysis\outputs\report_figures\08_probability_distribution.png
+09_wordcloud.png,母婴商品消费热点词云,D:\mother_baby_analysis\outputs\report_figures\09_wordcloud.png
+10_dashboard_business_overview.png,业务总览大屏截图索引,D:\mother_baby_analysis\outputs\report_figures\10_dashboard_business_overview.png
+11_dashboard_model_validation.png,模型验证大屏截图索引,D:\mother_baby_analysis\outputs\report_figures\11_dashboard_model_validation.png
