@@ -1,0 +1,15 @@
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+pyecharts
+plotly
+wordcloud
+pillow
+openpyxl
+jupyter
+notebook
+pyspark
+fastapi
+uvicorn
